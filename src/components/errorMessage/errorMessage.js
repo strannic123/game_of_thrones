@@ -4,7 +4,7 @@ import './errorMessage.css';
 const ErrorMessage = () => {
     return (
         <>
-            <img src={process.env.PUBLIC_URL + '/img/error.jpeg'} alt="error"></img>
+            <img src={process.env.PUBLIC_URL + '/img/error1.jpg'} alt="error"></img>
             <span>Something goes wrong</span>
         </>
     )
