@@ -2,11 +2,14 @@ import React, {Component} from 'react';
 import {Col, Row, Container} from 'reactstrap';
 import Header from '../header';
 import RandomChar from '../randomChar';
-import CharacterPage from "../characterPage";
 import ErrorMessage from "../errorMessage";
-import ItemList from "../itemList";
-import CharDetails from "../charDetails";
 import gotService from "../../services/gotService";
+import {BrowserRouter as Router, Route} from "react-router-dom";
+import CharacterPage from "../pages/characterPage";
+import BooksItem from "../pages/booksItem";
+import BooksPage from "../pages/booksPage";
+import HousesPage from "../pages/housesPage";
+
 
 
 export default class App extends Component {
@@ -14,7 +17,6 @@ export default class App extends Component {
 
     state = {
         showRandomChar: true,
-
         error: false
     }
 
@@ -36,57 +38,46 @@ export default class App extends Component {
 
 
     render() {
+        const {showRandomChar} = this.state
+
+        const char = showRandomChar ? <RandomChar/> : null;
+
         if (this.state.error) {
             return <ErrorMessage/>
         }
 
-        const {showRandomChar} = this.state
 
-        const btnHideShow = showRandomChar ? <RandomChar/> : null;
 
         return (
-            <>
-                <Container>
-                    <Header />
-                </Container>
-                <Container>
-                    <Row>
-                        <Col lg={{size: 5, offset: 0}}>
-                            {/*<RandomChar/>*/}
-                            {btnHideShow}
-                            <button
-                                className="btn-primary mb-5 p-2 rounded"
-                                onClick={this.onShowHideRandomChar}
-                            >Toggle random character</button>
-                        </Col>
-                    </Row>
-                    <CharacterPage/>
-                    <Row>
-                        <Col md='6'>
-                            <ItemList
-                                onItemSelected={this.onItemSelected}
-                                getData={this.gotService.getAllBooks}
-                                renderItem={(item) => item.name}
-                            />
-                        </Col>
-                        <Col md='6'>
-                            <CharDetails charId={this.state.selectedChar}/>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md='6'>
-                            <ItemList
-                                charId={this.state.selectedChar}
-                                getData={this.gotService.getAllHouses}
-                                renderItem={(item) => item.name}
-                            />
-                        </Col>
-                        <Col md='6'>
-                            <CharDetails charId={this.state.selectedChar}/>
-                        </Col>
-                    </Row>
-                </Container>
-            </>
+            <Router>
+                <div className="app">
+                    <Container>
+                        <Header />
+                    </Container>
+                    <Container>
+                        <Row>
+                            <Col lg={{size: 5, offset: 0}}>
+                                {char}
+                                <button
+                                    className="btn-primary mb-5 p-2 rounded"
+                                    onClick={this.onShowHideRandomChar}
+                                >Toggle random character</button>
+                            </Col>
+                        </Row>
+                        <Route path='/'  component={() => <span>Welcome to GOT DB</span>} exact/>
+                        <Route path='/characters' component={CharacterPage}/>
+                        <Route path='/houses' component={HousesPage}/>
+                        <Route path='/books'  component={BooksPage} exact/>
+                        <Route path='/books/:id' render={
+                            ({match}) => {
+                                const {id} = match.params;
+                               return <BooksItem bookId={id}/>
+                            }
+                        }/>
+                    </Container>
+                </div>
+            </Router>
+
         );
     }
 
